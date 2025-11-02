@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  name: { type: string, required: true },
-  email: { type: string, required: true, unique: true },
-  password: { type: string, required: true },
-  verifyOtp: { type: string, default: "" },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  verifyOtp: { type: String, default: "" },
   verifyOtpExpireAt: { type: Number, default: 0 },
   isAccountVerified: { type: Boolean, default: false },
-  resetOtp: { type: string, default: "" },
+  resetOtp: { type: String, default: "" },
   resetOtpExpireAt: { type: Number, default: 0 },
 });
 
