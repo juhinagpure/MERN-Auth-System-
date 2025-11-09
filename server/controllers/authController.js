@@ -19,17 +19,14 @@ export const register = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
-    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new userModel({ name, email, password: hashedPassword });
     await user.save();
 
-    // JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // set cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -37,7 +34,6 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // send welcome email 📨
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: email,
@@ -126,7 +122,7 @@ export const logout = async (req, res) => {
 // 📨 SEND VERIFICATION OTP
 export const sendVerifyOtp = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId; // ✅ from userAuth middleware
 
     const user = await userModel.findById(userId);
     if (!user) return res.json({ success: false, message: "User not found" });
@@ -162,13 +158,14 @@ export const sendVerifyOtp = async (req, res) => {
 
 // ✅ VERIFY EMAIL
 export const verifyEmail = async (req, res) => {
-  const { userId, otp } = req.body;
-
-  if (!userId || !otp) {
-    return res.json({ success: false, message: "Missing details" });
-  }
-
   try {
+    const userId = req.userId; // ✅ from middleware
+    const { otp } = req.body;
+
+    if (!otp) {
+      return res.json({ success: false, message: "Missing OTP" });
+    }
+
     const user = await userModel.findById(userId);
     if (!user) {
       return res.json({ success: false, message: "User not found" });
