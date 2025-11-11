@@ -1,4 +1,3 @@
-// middleware/userAuth.js
 import jwt from "jsonwebtoken";
 
 const userAuth = async (req, res, next) => {
@@ -20,7 +19,7 @@ const userAuth = async (req, res, next) => {
       });
     }
 
-    req.userId = tokenDecode.id; // ✅ Attach userId to request
+    req.userId = tokenDecode.id; // ✅ userId attach to request
     next();
   } catch (error) {
     return res.json({ success: false, message: error.message });
